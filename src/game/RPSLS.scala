@@ -4,14 +4,24 @@ import scala.util.Random
 
 object RPSLS {
 
-  def main(args: Array[String]): Unit = {
-
     val possible: List[String] = List[String](
       "rock",
       "paper",
       "lizard",
       "scissors",
       "spock")
+
+	val outcomes: List[String] = List("Tie","Win","Win","Lose","Lose")
+
+	def attack(a:String, b:String):String = {
+		outcomes(scala.math.abs((possible.indexOf(a)-possible.indexOf(b) % 5)))
+	}
+
+
+  def main(args: Array[String]): Unit = {
+
+
+
 
     val actions = Map(
       ("rock", "lizard") -> "crushes",
@@ -34,29 +44,6 @@ object RPSLS {
       ("rock", "spock") -> "vaporizes",
       ("spock", "scissors") -> "smashes",
       ("scissors", "spock") -> "smashes")
-
-    val outcomes = Map(
-      ("rock", "lizard") -> 1,
-      ("lizard", "rock") -> -1,
-      ("rock", "scissors") -> 1,
-      ("scissors", "rock") -> -1,
-      ("paper", "rock") -> 1,
-      ("rock", "paper") -> -1,
-      ("paper","spock") -> 1,
-      ("spock", "paper") -> -1,
-      ("lizard", "paper") -> 1,
-      ("paper", "lizard") -> -1,
-      ("lizard", "spock") -> 1,
-      ("spock", "lizard") -> -1,
-      ("scissors", "paper") -> 1,
-      ("paper", "scissors") -> -1,
-      ("scissors", "lizard") -> 1,
-      ("lizard", "scissors") -> -1,
-      ("spock", "rock") -> 1,
-      ("rock", "spock") -> -1,
-      ("spock", "scissors") -> 1,
-      ("scissors", "spock") -> -1)
-
 
     var playerWins: Int = 0
     var computerWins: Int = 0
@@ -103,22 +90,19 @@ object RPSLS {
 		    println("Computer picks: " + computerMove + ".")
 		    println
 
-		    val pair = (playerMove, computerMove.toLowerCase())
-		    val action = if(actions.contains(pair)) actions(pair) else ""
-
-		    val playerScore =
-		      if (playerMove  == computerMove.toLowerCase()) 0
-		      else outcomes(pair)
-
-		    val output: String = playerScore match {
-		      case 0 => "Tie"
-		      case 1 => playerInput + " " + action + " " + computerMove + ". Player wins!"
-		      case -1 => computerMove + " " + action + " " + playerMove + ". Computer wins!"
+		    val outcome = attack(playerMove, computerMove.toLowerCase())
+		    
+		    val action = actions((playerMove.toLowerCase(), computerMove.toLowerCase()))
+		    val output: String = outcome match {
+		      case "Tie" => "Tie"
+		      case "Win" => playerInput + " " + action + " " + computerMove + ". Player wins!"
+		      case "Lose" => computerMove + " " + action + " " + playerMove + ". Computer wins!"
 		    }
-		    roundsPlayed += 1
-	            if(playerScore == 1){
+		   
+		     roundsPlayed += 1
+	            if(outcome == "Win"){
 			 playerWins += 1  		
-		    }else if(playerScore == -1){
+		    }else if(outcome == "Lose"){
 			computerWins += 1
 		    }
 		    println(output)
@@ -129,10 +113,10 @@ object RPSLS {
 
 	println("Game Over!")
 	println("Score:")
-	println("Plarer score: " + playerWins + " (" + 100 * playerWins / roundsPlayed.toFloat + "%)")
-	println("Computer score: " + computerWins + " (" + 100 * computerWins / roundsPlayed.toFloat+ "%)")
-	val ties = roundsPlayed - playerWins - computerWins
-	println("Ties: " + ties + " (" + 100 * ties / roundsPlayed.toFloat + "%)")
+	println("Player score: " + playerWins + " (" + playerWins / 100.0 + "%)")
+	println("Computer score: " + computerWins)
+	println("Player score: " + playerWins + " (" + playerWins / 100.0 + "%)")
+	println("Ties: " + (roundsPlayed - playerWins - computerWins))
 	
 	val output = 
 	if(playerWins > computerWins) "Player Wins!"
